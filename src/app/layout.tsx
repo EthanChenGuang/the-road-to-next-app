@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
 
+import { Button } from '@/components/ui/button';
 import { paths } from '@/paths';
 
 export const metadata: Metadata = {
@@ -30,14 +31,14 @@ export default function RootLayout({
             "
         >
           <div>
-            <Link href={paths.home} className="text-lg font-bold">
-              Home
-            </Link>
+            <Button variant="outline" asChild>
+              <Link href={paths.home}>Home</Link>
+            </Button>
           </div>
           <div>
-            <Link href={paths.tickets} className="text-sm underline">
-              Tickets
-            </Link>
+            <Button variant="outline" asChild>
+              <Link href={paths.tickets}>Tickets</Link>
+            </Button>
           </div>
         </nav>
         <main
