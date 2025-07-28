@@ -1,7 +1,7 @@
-import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
-import initialTickets from '@/data';
-import { paths } from '@/paths';
+import TicketItem from '@/features/ticket/components/ticket-item';
+import { getTicket } from '@/features/ticket/queries/get-ticket';
 
 type TicketPageProps = {
   params: Promise<{
@@ -11,19 +11,15 @@ type TicketPageProps = {
 
 const TicketPage = async ({ params }: TicketPageProps) => {
   const { ticketId } = await params;
+  const ticket = await getTicket(Number(ticketId));
 
-  const ticket = initialTickets.find(
-    (ticket) => ticket.id === parseInt(ticketId)
-  );
+  if (!ticket) {
+    notFound();
+  }
 
   return (
-    <div>
-      <Link href={paths.tickets} className="text-blue-500">
-        Go to tickets
-      </Link>
-      <h1 className="text-2xl font-bold">TicketPage {ticket?.title}</h1>
-      <p>{ticket?.content}</p>
-      <p>{ticket?.status}</p>
+    <div className="flex justify-center animate-fade-in-from-top">
+      <TicketItem ticket={ticket} isDetail={true} />
     </div>
   );
 };
