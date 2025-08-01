@@ -6,6 +6,9 @@ import Placeholder from '@/components/placeholder';
 import { Spinner } from '@/components/spinner';
 import { TicketList } from '@/features/ticket/components/ticket-list';
 
+//export const dynamic = 'force-dynamic';  // for dynamic data
+//export const revalidate = 10; // time based cache for static data (10 seconds)
+
 const TicketsPage = () => {
   return (
     <div className="flex flex-col gap-y-16">
