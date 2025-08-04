@@ -16,6 +16,10 @@ import { Ticket } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 
 export const getTickets = async (): Promise<Ticket[]> => {
-  const tickets = await prisma.ticket.findMany();
+  const tickets = await prisma.ticket.findMany({
+    orderBy: {
+      updatedAt: 'desc',
+    },
+  });
   return tickets;
 };

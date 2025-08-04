@@ -1,0 +1,43 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
+
+type CardCompactProps = {
+  title: string;
+  description: string;
+  content: React.ReactNode;
+  className?: string;
+  classNameTitle?: string;
+  classNameDescription?: string;
+  footer?: React.ReactNode;
+};
+
+const CardCompact = ({
+  title,
+  description,
+  content,
+  className,
+  classNameTitle,
+  classNameDescription,
+  footer,
+}: CardCompactProps) => {
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle className={classNameTitle}>{title}</CardTitle>
+        <CardDescription className={classNameDescription}>
+          {description}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>{content}</CardContent>
+      {footer && <CardFooter>{footer}</CardFooter>}
+    </Card>
+  );
+};
+
+export { CardCompact };
