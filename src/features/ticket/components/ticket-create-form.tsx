@@ -54,10 +54,16 @@ const TicketCreateForm = () => {
     }
   };
 
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    handleSubmit(formData);
+  };
+
   return (
-    <form action={handleSubmit} className="flex flex-col gap-y-2">
+    <form onSubmit={handleFormSubmit} className="flex flex-col gap-y-2">
       {error && (
-        <div className="text-sm text-red-500 border border-red-500 rounded p-2 mb-4">
+        <div className="text-sm text-red-500 border border-red-500 rounded p-2 mb-4 bg-red-50">
           {error}
         </div>
       )}
@@ -70,7 +76,7 @@ const TicketCreateForm = () => {
       />
       <Label htmlFor="content">Content*</Label>
       <Textarea id="content" name="content" onKeyDown={handleTextareaKeyDown} />
-      <Button type="submit">Create Ticket</Button>
+      <Button type="submit">Create</Button>
     </form>
   );
 };

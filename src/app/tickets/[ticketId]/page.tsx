@@ -22,15 +22,17 @@ const TicketPage = async ({ params }: TicketPageProps) => {
   }
 
   return (
-    <div className="flex flex-col items-center animate-fade-in-from-top gap-8">
-      <TicketItem ticket={ticket} isDetail={true} />
-      <Button variant="outline" asChild>
-        <Link href={paths.tickets} className="flex items-center gap-2">
-          <LucideArrowLeft className="w-4 h-4" />
-          Back
-        </Link>
-      </Button>
-    </div>
+    <>
+      <div className="flex flex-col items-center animate-fade-in-from-top gap-8">
+        <TicketItem ticket={ticket} isDetail={true} />
+        <Button variant="outline" asChild>
+          <Link href={paths.tickets} className="flex items-center gap-2">
+            <LucideArrowLeft className="w-4 h-4" />
+            Back
+          </Link>
+        </Button>
+      </div>
+    </>
   );
 };
 

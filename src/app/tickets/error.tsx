@@ -10,8 +10,7 @@ export default function Error({ error }: { error: Error }) {
   const router = useRouter();
 
   const handleRetry = () => {
-    router.push(paths.tickets);
-    router.refresh();
+    router.replace(paths.tickets);
   };
 
   return (
