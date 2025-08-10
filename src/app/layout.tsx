@@ -4,7 +4,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
 import Header from '@/components/header';
-import { RedirectToast } from '@/components/redirect-toast';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -37,8 +36,6 @@ export default function RootLayout({
             {children}
           </main>
           <Toaster expand={true} />
-
-          <RedirectToast />
         </ThemeProvider>
       </body>
     </html>
