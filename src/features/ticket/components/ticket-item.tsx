@@ -3,18 +3,28 @@
 import { Ticket } from '@prisma/client';
 import clsx from 'clsx';
 import {
+  LucideMoreVertical,
   LucidePencil,
   LucideSquareArrowOutUpRight,
   LucideTrash,
 } from 'lucide-react';
 import Link from 'next/link';
 
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { paths } from '@/paths';
+import { toCurrencyFromCents } from '@/utils/currency';
 
 import { deleteTicket } from '../actions/delete-ticket';
 import { TICKET_ICONS } from '../constants';
+import { TicketMoreMenu } from './ticket-more-menu';
 
 type TicketItemProps = {
   ticket: Ticket;
@@ -43,11 +53,11 @@ const TicketItem = ({ ticket, isDetail = true }: TicketItemProps) => {
     await deleteTicket(ticket.id);
   };
 
-  const deleteButton = (
-    <Button variant="outline" size="icon" onClick={handleDeleteTicket}>
-      <LucideTrash className="w-4 h-4" />
-    </Button>
-  );
+  // const deleteButton = (
+  //   <Button variant="outline" size="icon" onClick={handleDeleteTicket}>
+  //     <LucideTrash className="w-4 h-4" />
+  //   </Button>
+  // );
 
   // TODO: Implement server action for delete ticket
   /*
@@ -59,6 +69,29 @@ const TicketItem = ({ ticket, isDetail = true }: TicketItemProps) => {
     </form>
   );
   */
+
+  // const deleteButton = (
+  //   <ConfirmDialog
+  //     action={deleteTicket.bind(null, ticket.id)}
+  //     trigger={
+  //       <Button variant="outline" size="icon">
+  //         <LucideTrash className="h-4 w-4" />
+  //       </Button>
+  //     }
+  //   />
+  // );
+
+  const moreMenu = (
+    <TicketMoreMenu
+      ticket={ticket}
+      trigger={
+        <Button variant="outline" size="icon">
+          <LucideMoreVertical className="w-4 h-4" />
+        </Button>
+      }
+    />
+  );
+
   return (
     <div
       className={clsx('w-full flex gap-x-1', {
@@ -86,18 +119,26 @@ const TicketItem = ({ ticket, isDetail = true }: TicketItemProps) => {
             {ticket.content}
           </span>
         </CardContent>
+        <CardFooter className="flex justify-between">
+          <p className="text-sm text-muted-foreground">{ticket.deadline}</p>
+          <p className="text-sm text-muted-foreground">
+            {toCurrencyFromCents(ticket.bounty)}
+          </p>
+        </CardFooter>
       </Card>
 
       <div className="flex flex-col gap-y-1">
         {isDetail ? (
           <>
             {editButton}
-            {deleteButton}
+            {/* {deleteButton} */}
+            {moreMenu}
           </>
         ) : (
           <>
             {detailButton}
             {editButton}
+            {moreMenu}
           </>
         )}
       </div>
