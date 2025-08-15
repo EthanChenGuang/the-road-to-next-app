@@ -6,11 +6,9 @@ import {
   LucideMoreVertical,
   LucidePencil,
   LucideSquareArrowOutUpRight,
-  LucideTrash,
 } from 'lucide-react';
 import Link from 'next/link';
 
-import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -22,7 +20,6 @@ import {
 import { paths } from '@/paths';
 import { toCurrencyFromCents } from '@/utils/currency';
 
-import { deleteTicket } from '../actions/delete-ticket';
 import { TICKET_ICONS } from '../constants';
 import { TicketMoreMenu } from './ticket-more-menu';
 
@@ -49,9 +46,9 @@ const TicketItem = ({ ticket, isDetail = true }: TicketItemProps) => {
     </Button>
   );
 
-  const handleDeleteTicket = async () => {
-    await deleteTicket(ticket.id);
-  };
+  // const handleDeleteTicket = async () => {
+  //   await deleteTicket(ticket.id);
+  // };
 
   // const deleteButton = (
   //   <Button variant="outline" size="icon" onClick={handleDeleteTicket}>
@@ -138,7 +135,7 @@ const TicketItem = ({ ticket, isDetail = true }: TicketItemProps) => {
           <>
             {detailButton}
             {editButton}
-            {moreMenu}
+            {/* {moreMenu} */}
           </>
         )}
       </div>

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 
 import { RedirectToast } from '@/components/redirect-toast';
 
@@ -10,7 +10,9 @@ export default function RootTemplate({ children }: RootTemplateProps) {
   return (
     <div>
       {children}
-      <RedirectToast />
+      <Suspense fallback={null}>
+        <RedirectToast />
+      </Suspense>
     </div>
   );
 }

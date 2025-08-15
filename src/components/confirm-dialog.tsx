@@ -40,7 +40,12 @@ const useConfirmDialog = ({
     },
   } as Record<string, unknown>) as ReactElement;
 
-  const [actionState, formAction] = useActionState(action, EMPTY_ACTION_STATE);
+  const [actionState, formAction] = useActionState(
+    async (_state: ActionState, formData: FormData) => {
+      return await action(formData);
+    },
+    EMPTY_ACTION_STATE
+  );
 
   const handleSuccess = () => {
     setIsOpen(false);
