@@ -1,54 +1,82 @@
+import { createHash } from 'node:crypto';
+
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const tickets = [
+const users = [
   {
-    title: 'Ticket 1',
-    content: 'This is the first ticket from the database',
-    status: 'DONE' as const,
-    deadline: '2024-12-31',
-    bounty: 50000,
+    username: 'admin',
+    email: 'quanter.chen@gmail.com',
+    passwordHash:
+      '$2a$10$K7L/P5GIGOOduqNOHSeR8.QJEFJJfJ7/Q7Dq6H8H8H8H8H8H8H8H8',
   },
   {
-    title: 'Ticket 2',
-    content: 'This is the second ticket from the database',
-    status: 'OPEN' as const,
-    deadline: '2024-12-15',
-    bounty: 25000,
+    username: 'guang',
+    email: 'chen.guang.regis@gmail.com',
+    passwordHash:
+      '$2a$10$K7L/P5GIGOOduqNOHSeR8.QJEFJJfJ7/Q7Dq6H8H8H8H8H8H8H8H8',
   },
   {
-    title: 'Ticket 3',
-    content: 'This is the third ticket from the database',
-    status: 'IN_PROGRESS' as const,
-    deadline: '2024-11-30',
-    bounty: 75000,
+    username: 'ethan',
+    email: 'quanter_chen@hotmail.com',
+    passwordHash:
+      '$2a$10$K7L/P5GIGOOduqNOHSeR8.QJEFJJfJ7/Q7Dq6H8H8H8H8H8H8H8H8',
   },
 ];
 
 const seed = async () => {
   const startTime = performance.now();
-  console.log('Seeding tickets started ...');
-  // for (const ticket of tickets) {
-  //     await prisma.ticket.create({
-  //         data: ticket,
-  //     });
-  // }
+  console.log('Seeding database started ...');
 
-  // const promises = tickets.map(async (ticket) => {
-  //     await prisma.ticket.create({
-  //         data: ticket,
-  //     });
-  // });
-  // await Promise.all(promises);
+  // Clean up existing data
   await prisma.ticket.deleteMany();
+  await prisma.session.deleteMany();
+  await prisma.user.deleteMany();
+
+  // Create users
+  console.log('Creating users...');
+  const passwordHash = createHash('sha256').update('password').digest('hex');
+
+  const dbUsers = await prisma.user.createManyAndReturn({
+    data: users.map((user) => ({ ...user, passwordHash })),
+  });
+
+  // Create tickets for the users
+  console.log('Creating tickets...');
+  const tickets = [
+    {
+      title: 'Ticket 1',
+      content: 'This is the first ticket from the database',
+      status: 'DONE' as const,
+      deadline: '2024-12-31',
+      bounty: 50000,
+      userId: dbUsers[0].id,
+    },
+    {
+      title: 'Ticket 2',
+      content: 'This is the second ticket from the database',
+      status: 'OPEN' as const,
+      deadline: '2024-12-15',
+      bounty: 25000,
+      userId: dbUsers[1].id,
+    },
+    {
+      title: 'Ticket 3',
+      content: 'This is the third ticket from the database',
+      status: 'IN_PROGRESS' as const,
+      deadline: '2024-11-30',
+      bounty: 75000,
+      userId: dbUsers[2].id,
+    },
+  ];
 
   await prisma.ticket.createMany({
     data: tickets,
   });
 
   const endTime = performance.now();
-  console.log(`Seeding tickets completed in ${endTime - startTime}ms`);
+  console.log(`Seeding database completed in ${endTime - startTime}ms`);
 };
 
 seed();
