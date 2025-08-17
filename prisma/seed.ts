@@ -1,5 +1,4 @@
-import { createHash } from 'node:crypto';
-
+import { hash } from '@node-rs/argon2';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -36,18 +35,18 @@ const seed = async () => {
 
   // Create users
   console.log('Creating users...');
-  const passwordHash = createHash('sha256').update('password').digest('hex');
+  const passwordHash = await hash('password');
 
   const dbUsers = await prisma.user.createManyAndReturn({
     data: users.map((user) => ({ ...user, passwordHash })),
   });
 
-  // Create tickets for the users
+  // Create tickets
   console.log('Creating tickets...');
   const tickets = [
     {
       title: 'Ticket 1',
-      content: 'This is the first ticket from the database',
+      content: 'The first ticket from the database',
       status: 'DONE' as const,
       deadline: '2024-12-31',
       bounty: 50000,
@@ -55,7 +54,7 @@ const seed = async () => {
     },
     {
       title: 'Ticket 2',
-      content: 'This is the second ticket from the database',
+      content: 'The second ticket from the database',
       status: 'OPEN' as const,
       deadline: '2024-12-15',
       bounty: 25000,
@@ -63,7 +62,7 @@ const seed = async () => {
     },
     {
       title: 'Ticket 3',
-      content: 'This is the third ticket from the database',
+      content: 'The third ticket from the database',
       status: 'IN_PROGRESS' as const,
       deadline: '2024-11-30',
       bounty: 75000,

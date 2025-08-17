@@ -12,13 +12,21 @@
 // };
 
 import { Ticket } from '@prisma/client';
+import { Select } from 'react-day-picker';
 
 import { prisma } from '@/lib/prisma';
 
 export const getTickets = async (): Promise<Ticket[]> => {
   const tickets = await prisma.ticket.findMany({
     orderBy: {
-      updatedAt: 'desc',
+      createdAt: 'desc',
+    },
+    include: {
+      user: {
+        select: {
+          username: true,
+        },
+      },
     },
   });
   return tickets;

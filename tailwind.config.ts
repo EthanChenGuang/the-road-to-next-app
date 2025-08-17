@@ -24,9 +24,18 @@ const config: Config = {
             transform: 'translateY(0)',
           },
         },
+        'header-from-top': {
+          '0%': {
+            transform: 'translateY(-100%)',
+          },
+          '100%': {
+            transform: 'translateY(0)',
+          },
+        },
       },
       animation: {
         'fade-in-from-top': 'fade-in-from-top 1s ease-out forwards',
+        'header-from-top': 'header-from-top 0.5s ease-out',
       },
     },
   },

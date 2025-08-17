@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
+import { getAuth } from '@/features/auth/queries/get-auth';
 import { prisma } from '@/lib/prisma';
 import { paths } from '@/paths';
 
@@ -13,9 +14,20 @@ const createTicket = async (formData: FormData) => {
   const bounty = formData.get('bounty') as string;
 
   // Validate on server side but don't throw - just don't create if invalid
-  if (!title?.trim() || !content?.trim() || !deadline?.trim() || !bounty?.trim()) {
+  if (
+    !title?.trim() ||
+    !content?.trim() ||
+    !deadline?.trim() ||
+    !bounty?.trim()
+  ) {
     // Just return early without creating - let client side handle validation
     return;
+  }
+
+  const { user } = await getAuth();
+
+  if (!user) {
+    redirect(paths.signIn);
   }
 
   try {
@@ -24,6 +36,7 @@ const createTicket = async (formData: FormData) => {
       content: content.trim(),
       deadline: deadline.trim(),
       bounty: parseInt(bounty) * 100,
+      userId: user.id,
     };
 
     await prisma.ticket.create({

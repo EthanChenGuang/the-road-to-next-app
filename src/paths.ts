@@ -4,4 +4,7 @@ export const paths = {
   ticket: (ticketId: string) => `/tickets/${ticketId}`,
   newTicket: '/tickets/new',
   editTicket: (ticketId: string) => `/tickets/${ticketId}/edit`,
+  signIn: '/sign-in',
+  signUp: '/sign-up',
+  passwordForgot: '/password-forgot',
 };

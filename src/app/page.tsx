@@ -2,11 +2,11 @@ import Link from 'next/link';
 
 import Heading from '@/components/heading';
 import { paths } from '@/paths';
-import { getBaseUrl } from '@/utils/url';
+// import { getBaseUrl } from '@/utils/url';
 
 const HomePage = () => {
-  const baseUrl = getBaseUrl();
-  console.log(baseUrl);
+  //   const baseUrl = getBaseUrl();
+  //   console.log(baseUrl);
 
   return (
     <div className="flex flex-col gap-8">
