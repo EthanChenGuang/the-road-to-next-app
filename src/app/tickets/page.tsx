@@ -6,17 +6,23 @@ import Heading from '@/components/heading';
 import Placeholder from '@/components/placeholder';
 // import { RedirectToast } from '@/components/redirect-toast';
 import { Spinner } from '@/components/spinner';
+import { getAuthOrRedirect } from '@/features/auth/queries/get-auth-or-redirect';
 import { TicketList } from '@/features/ticket/components/ticket-list';
 import { TicketUpsertForm } from '@/features/ticket/components/ticket-upsert-form';
 
 //export const dynamic = 'force-dynamic';  // for dynamic data
 //export const revalidate = 10; // time based cache for static data (10 seconds)
 
-const TicketsPage = () => {
+const TicketsPage = async () => {
+  const { user } = await getAuthOrRedirect();
+
   return (
     <>
       <div className="flex flex-col gap-y-16">
-        <Heading title="Tickets" description="All your tickets at one place" />
+        <Heading
+          title="My Tickets"
+          description="All your tickets at one place"
+        />
 
         <CardCompact
           title="Create Ticket"
@@ -30,7 +36,7 @@ const TicketsPage = () => {
           fallback={<Placeholder label="Failed to load tickets" />}
         >
           <Suspense fallback={<Spinner />}>
-            <TicketList />
+            <TicketList userId={user?.id ?? null} />
           </Suspense>
         </ErrorBoundary>
       </div>

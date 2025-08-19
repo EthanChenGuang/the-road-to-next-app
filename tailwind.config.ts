@@ -32,10 +32,19 @@ const config: Config = {
             transform: 'translateY(0)',
           },
         },
+        'sidebar-from-left': {
+          '0%': {
+            transform: 'translateX(-100%)',
+          },
+          '100%': {
+            transform: 'translateX(0)',
+          },
+        },
       },
       animation: {
         'fade-in-from-top': 'fade-in-from-top 1s ease-out forwards',
         'header-from-top': 'header-from-top 0.5s ease-out',
+        'sidebar-from-left': 'sidebar-from-left 0.2s ease-out',
       },
     },
   },

@@ -1,3 +1,5 @@
+'use client';
+
 import { cloneElement, ReactElement, useActionState, useState } from 'react';
 
 import { Form } from './form/form';

@@ -34,7 +34,7 @@ const useActionFeedback = (
     }
 
     prevTimestamp.current = actionState.timestamp;
-  }, [actionState, options, isUpdate]);
+  }, [actionState, isUpdate]);
 };
 
 export { useActionFeedback };

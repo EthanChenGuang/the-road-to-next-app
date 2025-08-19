@@ -7,4 +7,6 @@ export const paths = {
   signIn: '/sign-in',
   signUp: '/sign-up',
   passwordForgot: '/password-forgot',
+  accountProfile: '/account/profile',
+  accountPassword: '/account/password',
 };

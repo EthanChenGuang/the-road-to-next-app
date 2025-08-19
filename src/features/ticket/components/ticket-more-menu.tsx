@@ -1,3 +1,5 @@
+'use client';
+
 import { Ticket, TicketStatus } from '@prisma/client';
 import { LucideTrash } from 'lucide-react';
 import { toast } from 'sonner';

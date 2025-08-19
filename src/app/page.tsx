@@ -1,7 +1,11 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import Heading from '@/components/heading';
-import { paths } from '@/paths';
+import Placeholder from '@/components/placeholder';
+import { Spinner } from '@/components/spinner';
+import { TicketList } from '@/features/ticket/components/ticket-list';
 // import { getBaseUrl } from '@/utils/url';
 
 const HomePage = () => {
@@ -10,12 +14,15 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col gap-8">
-      <Heading title="Home" description="Your home place to start" />
-      <div className="flex justify-center mt-8">
-        <Link href={paths.tickets} className="underline">
-          Go to tickets
-        </Link>
-      </div>
+      <Heading
+        title="All Tickets"
+        description="Tickets by everyone at one place"
+      />
+      <ErrorBoundary fallback={<Placeholder label="Failed to load tickets" />}>
+        <Suspense fallback={<Spinner />}>
+          <TicketList />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 };

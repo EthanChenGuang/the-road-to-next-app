@@ -1,4 +1,4 @@
-'use client';
+// 'use client';
 
 import { Prisma } from '@prisma/client';
 import clsx from 'clsx';
@@ -17,6 +17,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { getAuth } from '@/features/auth/queries/get-auth';
+import { isOwner } from '@/features/auth/utils/is-owner';
 import { paths } from '@/paths';
 import { toCurrencyFromCents } from '@/utils/currency';
 
@@ -36,8 +38,11 @@ type TicketItemProps = {
   isDetail?: boolean;
 };
 
-const TicketItem = ({ ticket, isDetail = true }: TicketItemProps) => {
-  // console.log('where am I displaying (TicketItem)?');
+const TicketItem = async ({ ticket, isDetail = true }: TicketItemProps) => {
+  const { user } = await getAuth();
+
+  const isTicketOwner = isOwner(user, ticket);
+
   const detailButton = (
     <Button variant="outline" size="icon" asChild>
       <Link prefetch href={paths.ticket(ticket.id)}>
@@ -46,47 +51,15 @@ const TicketItem = ({ ticket, isDetail = true }: TicketItemProps) => {
     </Button>
   );
 
-  const editButton = (
+  const editButton = isTicketOwner ? (
     <Button variant="outline" size="icon" asChild>
       <Link prefetch href={paths.editTicket(ticket.id)}>
         <LucidePencil className="w-4 h-4" />
       </Link>
     </Button>
-  );
+  ) : null;
 
-  // const handleDeleteTicket = async () => {
-  //   await deleteTicket(ticket.id);
-  // };
-
-  // const deleteButton = (
-  //   <Button variant="outline" size="icon" onClick={handleDeleteTicket}>
-  //     <LucideTrash className="w-4 h-4" />
-  //   </Button>
-  // );
-
-  // TODO: Implement server action for delete ticket
-  /*
-  const deleteButton = (
-    <form action={deleteTicket.bind(null, ticket.id)}>
-      <Button variant="outline" size="icon">
-        <LucideTrash className="h-4 w-4" />
-      </Button>
-    </form>
-  );
-  */
-
-  // const deleteButton = (
-  //   <ConfirmDialog
-  //     action={deleteTicket.bind(null, ticket.id)}
-  //     trigger={
-  //       <Button variant="outline" size="icon">
-  //         <LucideTrash className="h-4 w-4" />
-  //       </Button>
-  //     }
-  //   />
-  // );
-
-  const moreMenu = (
+  const moreMenu = isTicketOwner ? (
     <TicketMoreMenu
       ticket={ticket}
       trigger={
@@ -95,7 +68,7 @@ const TicketItem = ({ ticket, isDetail = true }: TicketItemProps) => {
         </Button>
       }
     />
-  );
+  ) : null;
 
   return (
     <div
@@ -138,14 +111,12 @@ const TicketItem = ({ ticket, isDetail = true }: TicketItemProps) => {
         {isDetail ? (
           <>
             {editButton}
-            {/* {deleteButton} */}
             {moreMenu}
           </>
         ) : (
           <>
             {detailButton}
             {editButton}
-            {/* {moreMenu} */}
           </>
         )}
       </div>
