@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -6,9 +5,14 @@ import Heading from '@/components/heading';
 import Placeholder from '@/components/placeholder';
 import { Spinner } from '@/components/spinner';
 import { TicketList } from '@/features/ticket/components/ticket-list';
+import { SearchParams } from '@/features/ticket/search-params';
 // import { getBaseUrl } from '@/utils/url';
 
-const HomePage = () => {
+type HomePageProps = {
+  searchParams: SearchParams;
+};
+
+const HomePage = async ({ searchParams }: HomePageProps) => {
   //   const baseUrl = getBaseUrl();
   //   console.log(baseUrl);
 
@@ -20,7 +24,7 @@ const HomePage = () => {
       />
       <ErrorBoundary fallback={<Placeholder label="Failed to load tickets" />}>
         <Suspense fallback={<Spinner />}>
-          <TicketList />
+          <TicketList searchParams={searchParams} />
         </Suspense>
       </ErrorBoundary>
     </div>

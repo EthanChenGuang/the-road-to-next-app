@@ -9,11 +9,16 @@ import { Spinner } from '@/components/spinner';
 import { getAuthOrRedirect } from '@/features/auth/queries/get-auth-or-redirect';
 import { TicketList } from '@/features/ticket/components/ticket-list';
 import { TicketUpsertForm } from '@/features/ticket/components/ticket-upsert-form';
+import { SearchParams } from '@/features/ticket/search-params';
 
 //export const dynamic = 'force-dynamic';  // for dynamic data
 //export const revalidate = 10; // time based cache for static data (10 seconds)
 
-const TicketsPage = async () => {
+type TicketsPageProps = {
+  searchParams: SearchParams;
+};
+
+const TicketsPage = async ({ searchParams }: TicketsPageProps) => {
   const { user } = await getAuthOrRedirect();
 
   return (
@@ -36,7 +41,7 @@ const TicketsPage = async () => {
           fallback={<Placeholder label="Failed to load tickets" />}
         >
           <Suspense fallback={<Spinner />}>
-            <TicketList userId={user?.id ?? null} />
+            <TicketList userId={user?.id ?? null} searchParams={searchParams} />
           </Suspense>
         </ErrorBoundary>
       </div>
