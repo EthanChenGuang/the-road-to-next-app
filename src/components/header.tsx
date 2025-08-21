@@ -1,27 +1,27 @@
 'use client';
 
-import { LucideLibrary, LucideLogOut } from 'lucide-react';
+import { LucideLibrary } from 'lucide-react';
 import Link from 'next/link';
 
-import { signOut } from '@/features/auth/actions/sign-out';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { paths } from '@/paths';
 
-import { SubmitButton } from './form/submit-button';
+import { AccountDropdown } from './account-dropdown';
 import { ThemeSwitcher } from './theme/theme-switcher';
 import { buttonVariants } from './ui/button';
 
 const Header = () => {
-  const { user, isLoading } = useAuth();
+  const { user, isFetched } = useAuth();
 
-  if (isLoading) {
+  if (!isFetched) {
     return null;
   }
 
   const navItems = user ? (
-    <form action={signOut}>
-      <SubmitButton icon={<LucideLogOut />} />
-    </form>
+    // <form action={signOut}>
+    //   <SubmitButton icon={<LucideLogOut />} />
+    // </form>
+    <AccountDropdown user={user} />
   ) : (
     <>
       <Link

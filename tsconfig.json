@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/tickets/page(client-side-fetching).tsx.backup"
+    "src/app/(authenticated)/tickets/page(client-side-fetching).tsx.backup"
   ],
   "exclude": ["node_modules", "**/*.backup"]
 }
