@@ -30,7 +30,7 @@ export const getTickets = async (
       },
     },
     orderBy: {
-      [searchParams.sortKey]: searchParams.sortValue as 'asc' | 'desc',
+      [searchParams.sortKey]: searchParams.sortValue,
     },
     include: {
       user: {
@@ -40,6 +40,6 @@ export const getTickets = async (
       },
     },
   });
-  
+
   return tickets;
 };

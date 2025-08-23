@@ -1,23 +1,23 @@
 'use client';
 
-import { useQueryState } from 'nuqs';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { Input } from '@/components/ui/input';
-import { searchParser } from '@/features/ticket/search-params';
 
 type SearchInputProps = {
+  value: string;
+  onChange: (value: string) => void;
   placeholder: string;
 };
 
-const SearchInput = ({ placeholder }: SearchInputProps) => {
-  const [search, setSearch] = useQueryState('search', searchParser);
+const SearchInput = ({ value, onChange, placeholder }: SearchInputProps) => {
+  // const [search, setSearch] = useQueryState('search', searchParser);
   // const searchParams = useSearchParams();
   // const pathname = usePathname();
   // const { replace } = useRouter();
 
   // Set current url with search params like /tickets?search=value
-  const handleChange = useDebouncedCallback(
+  const handleSearch = useDebouncedCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       // const value = e.target.value;
       // const params = new URLSearchParams(searchParams);
@@ -29,7 +29,8 @@ const SearchInput = ({ placeholder }: SearchInputProps) => {
       // }
 
       // replace(`${pathname}?${params.toString()}`, { scroll: false });
-      setSearch(e.target.value);
+      // setSearch(e.target.value);
+      onChange(e.target.value);
     },
     250
   );
@@ -37,8 +38,9 @@ const SearchInput = ({ placeholder }: SearchInputProps) => {
   return (
     <Input
       placeholder={placeholder}
-      defaultValue={search}
-      onChange={handleChange}
+      // defaultValue={search}
+      defaultValue={value}
+      onChange={handleSearch}
     />
   );
 };
