@@ -11,25 +11,26 @@
 //   });
 // };
 
+import { Ticket } from '@prisma/client';
+
 import { prisma } from '@/lib/prisma';
 
-// import { SearchParams } from '../search-params';
+import { ParsedSearchParams } from '../search-params';
 
-// export const getTickets = async (userId?: string | null): Promise<Ticket[]> => {
 export const getTickets = async (
-  userId?: string | null,
-  searchParams?: { search?: string }
-) => {
+  searchParams: ParsedSearchParams,
+  userId?: string | null
+): Promise<(Ticket & { user: { username: string } })[]> => {
   const tickets = await prisma.ticket.findMany({
     where: {
       userId: userId ?? undefined,
       title: {
-        contains: searchParams?.search ?? '',
+        contains: searchParams.search,
         mode: 'insensitive',
       },
     },
     orderBy: {
-      createdAt: 'desc',
+      [searchParams.sortKey]: searchParams.sortValue as 'asc' | 'desc',
     },
     include: {
       user: {
@@ -39,5 +40,6 @@ export const getTickets = async (
       },
     },
   });
+  
   return tickets;
 };

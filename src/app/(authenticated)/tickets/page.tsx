@@ -1,3 +1,4 @@
+import { SearchParams } from 'nuqs/server';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -9,17 +10,19 @@ import { Spinner } from '@/components/spinner';
 import { getAuthOrRedirect } from '@/features/auth/queries/get-auth-or-redirect';
 import { TicketList } from '@/features/ticket/components/ticket-list';
 import { TicketUpsertForm } from '@/features/ticket/components/ticket-upsert-form';
-import { SearchParams } from '@/features/ticket/search-params';
+import { searchParamsCache } from '@/features/ticket/search-params';
 
 //export const dynamic = 'force-dynamic';  // for dynamic data
 //export const revalidate = 10; // time based cache for static data (10 seconds)
 
 type TicketsPageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 };
 
 const TicketsPage = async ({ searchParams }: TicketsPageProps) => {
   const { user } = await getAuthOrRedirect();
+  const resolvedSearchParams = await searchParams;
+  const parsedSearchParams = searchParamsCache.parse(resolvedSearchParams);
 
   return (
     <>
@@ -41,7 +44,10 @@ const TicketsPage = async ({ searchParams }: TicketsPageProps) => {
           fallback={<Placeholder label="Failed to load tickets" />}
         >
           <Suspense fallback={<Spinner />}>
-            <TicketList userId={user?.id ?? null} searchParams={searchParams} />
+            <TicketList
+              userId={user?.id ?? null}
+              searchParams={parsedSearchParams}
+            />
           </Suspense>
         </ErrorBoundary>
       </div>

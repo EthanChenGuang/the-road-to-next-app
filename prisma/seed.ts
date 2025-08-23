@@ -41,8 +41,10 @@ const seed = async () => {
     data: users.map((user) => ({ ...user, passwordHash })),
   });
 
-  // Create tickets
+  // Create tickets with different timestamps
   console.log('Creating tickets...');
+  const baseTime = new Date('2024-01-01T10:00:00.000Z');
+  
   const tickets = [
     {
       title: 'Ticket 1',
@@ -51,6 +53,7 @@ const seed = async () => {
       deadline: '2024-12-31',
       bounty: 50000,
       userId: dbUsers[0].id,
+      createdAt: new Date(baseTime.getTime() + 2 * 24 * 60 * 60 * 1000), // Newest (created last)
     },
     {
       title: 'Ticket 2',
@@ -59,6 +62,7 @@ const seed = async () => {
       deadline: '2024-12-15',
       bounty: 25000,
       userId: dbUsers[1].id,
+      createdAt: new Date(baseTime.getTime() + 24 * 60 * 60 * 1000), // Middle
     },
     {
       title: 'Ticket 3',
@@ -67,6 +71,7 @@ const seed = async () => {
       deadline: '2024-11-30',
       bounty: 75000,
       userId: dbUsers[2].id,
+      createdAt: new Date(baseTime.getTime()), // Oldest (created first)
     },
   ];
 
