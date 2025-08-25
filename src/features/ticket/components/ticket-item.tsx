@@ -124,4 +124,4 @@ const TicketItem = async ({ ticket, isDetail = true }: TicketItemProps) => {
   );
 };
 
-export default TicketItem;
+export { TicketItem };

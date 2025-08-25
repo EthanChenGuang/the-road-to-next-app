@@ -4,7 +4,8 @@ import Placeholder from '@/components/placeholder';
 
 import { getTickets } from '../queries/get-tickets';
 import { ParsedSearchParams } from '../search-params';
-import TicketItem from './ticket-item';
+import { TicketItem } from './ticket-item';
+import { TicketPagination } from './ticket-pagination';
 import { TicketSearchInput } from './ticket-search-input';
 import { TicketSortSelect } from './ticket-sort-select';
 
@@ -15,7 +16,10 @@ type TicketListProps = {
 
 export const TicketList = async ({ userId, searchParams }: TicketListProps) => {
   // const resolvedSearchParams = await searchParams;
-  const tickets = await getTickets(searchParams, userId);
+  const { list: tickets, metadata: ticketMetadata } = await getTickets(
+    searchParams,
+    userId
+  );
 
   return (
     <NuqsAdapter>
@@ -50,6 +54,10 @@ export const TicketList = async ({ userId, searchParams }: TicketListProps) => {
         ) : (
           <Placeholder label="No tickets found" />
         )}
+
+        <div className="w-full max-w-[420px]">
+          <TicketPagination paginatedTicketMetadata={ticketMetadata} />
+        </div>
       </div>
     </NuqsAdapter>
   );
