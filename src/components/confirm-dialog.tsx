@@ -1,8 +1,8 @@
 'use client';
 
-import { cloneElement, ReactElement, useActionState, useState } from 'react';
+import { cloneElement, ReactElement, useActionState, useEffect,useState } from 'react';
+import { toast } from 'sonner';
 
-import { Form } from './form/form';
 import { SubmitButton } from './form/submit-button';
 import { ActionState, EMPTY_ACTION_STATE } from './form/utils/to-action-state';
 import {
@@ -36,6 +36,9 @@ const useConfirmDialog = ({
   //   );
 
   const dialogTrigger = cloneElement(trigger, {
+    onClick: () => {
+      setIsOpen(true);
+    },
     onSelect: () => {
       // Small delay to ensure dropdown closes before dialog opens
       setTimeout(() => setIsOpen(true), 0);
@@ -44,14 +47,27 @@ const useConfirmDialog = ({
 
   const [actionState, formAction] = useActionState(
     async (_state: ActionState, formData: FormData) => {
-      return await action(formData);
+      const result = await action(formData);
+      
+      // Show toast immediately since form might get unmounted
+      if (result.status === 'SUCCESS' && result.message) {
+        toast.success(result.message);
+      } else if (result.status === 'ERROR' && result.message) {
+        toast.error(result.message);
+      }
+      
+      return result;
     },
     EMPTY_ACTION_STATE
   );
 
-  const handleSuccess = () => {
-    setIsOpen(false);
-  };
+  // Close dialog when action succeeds
+  useEffect(() => {
+    if (actionState.status === 'SUCCESS') {
+      // Small delay to ensure toast appears before dialog closes
+      setTimeout(() => setIsOpen(false), 200);
+    }
+  }, [actionState.status]);
 
   const dialog = (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -63,13 +79,9 @@ const useConfirmDialog = ({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction asChild>
-            <Form
-              action={formAction}
-              actionState={actionState}
-              onSuccess={handleSuccess}
-            >
+            <form action={formAction} className="flex flex-col gap-y-2">
               <SubmitButton label="Confirm" />
-            </Form>
+            </form>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

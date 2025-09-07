@@ -9,4 +9,6 @@ export const paths = {
   passwordForgot: '/password-forgot',
   accountProfile: '/account/profile',
   accountPassword: '/account/password',
+  editComment: (ticketId: string, commentId: string) =>
+    `/tickets/${ticketId}/${commentId}/edit`,
 };

@@ -29,6 +29,7 @@ const seed = async () => {
   console.log('Seeding database started ...');
 
   // Clean up existing data
+  await prisma.comment.deleteMany();
   await prisma.ticket.deleteMany();
   await prisma.session.deleteMany();
   await prisma.user.deleteMany();
@@ -75,8 +76,94 @@ const seed = async () => {
     },
   ];
 
-  await prisma.ticket.createMany({
+  const dbTickets = await prisma.ticket.createManyAndReturn({
     data: tickets,
+  });
+
+  // Create comments with different timestamps
+  console.log('Creating comments...');
+  const comments = [
+    // Comments for Ticket 1 (DONE) - showing progression
+    {
+      content: "I'll take a look at this ticket and provide an update soon.",
+      ticketId: dbTickets[0].id,
+      userId: dbUsers[1].id, // guang
+      createdAt: new Date(baseTime.getTime() + 2 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000), // 2 hours after ticket creation
+    },
+    {
+      content: "Started working on this. Should have initial results by tomorrow.",
+      ticketId: dbTickets[0].id,
+      userId: dbUsers[1].id, // guang
+      createdAt: new Date(baseTime.getTime() + 2 * 24 * 60 * 60 * 1000 + 6 * 60 * 60 * 1000), // 6 hours after ticket creation
+    },
+    {
+      content: "Great progress! Looking forward to the results.",
+      ticketId: dbTickets[0].id,
+      userId: dbUsers[0].id, // admin (ticket creator)
+      createdAt: new Date(baseTime.getTime() + 2 * 24 * 60 * 60 * 1000 + 8 * 60 * 60 * 1000), // 8 hours after ticket creation
+    },
+    {
+      content: "Task completed successfully. All requirements have been met.",
+      ticketId: dbTickets[0].id,
+      userId: dbUsers[1].id, // guang
+      createdAt: new Date(baseTime.getTime() + 3 * 24 * 60 * 60 * 1000), // Day after ticket creation
+    },
+
+    // Comments for Ticket 2 (OPEN) - initial discussions
+    {
+      content: "Could you provide more details about the specific requirements?",
+      ticketId: dbTickets[1].id,
+      userId: dbUsers[2].id, // ethan
+      createdAt: new Date(baseTime.getTime() + 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000), // 3 hours after ticket creation
+    },
+    {
+      content: "This looks interesting. What's the expected timeline?",
+      ticketId: dbTickets[1].id,
+      userId: null, // anonymous comment
+      createdAt: new Date(baseTime.getTime() + 24 * 60 * 60 * 1000 + 5 * 60 * 60 * 1000), // 5 hours after ticket creation
+    },
+    {
+      content: "I have some experience with similar projects. Happy to collaborate if needed.",
+      ticketId: dbTickets[1].id,
+      userId: dbUsers[0].id, // admin
+      createdAt: new Date(baseTime.getTime() + 24 * 60 * 60 * 1000 + 24 * 60 * 60 * 1000), // Day after ticket creation
+    },
+
+    // Comments for Ticket 3 (IN_PROGRESS) - active work updates
+    {
+      content: "Starting work on this ticket. Will provide regular updates.",
+      ticketId: dbTickets[2].id,
+      userId: dbUsers[2].id, // ethan (ticket creator)
+      createdAt: new Date(baseTime.getTime() + 2 * 60 * 60 * 1000), // 2 hours after ticket creation
+    },
+    {
+      content: "Made good progress on the initial setup. About 30% complete.",
+      ticketId: dbTickets[2].id,
+      userId: dbUsers[2].id, // ethan
+      createdAt: new Date(baseTime.getTime() + 12 * 60 * 60 * 1000), // 12 hours after ticket creation
+    },
+    {
+      content: "Looks promising! Let me know if you need any help with testing.",
+      ticketId: dbTickets[2].id,
+      userId: dbUsers[1].id, // guang
+      createdAt: new Date(baseTime.getTime() + 16 * 60 * 60 * 1000), // 16 hours after ticket creation
+    },
+    {
+      content: "Hit a small roadblock with the integration. Investigating solutions.",
+      ticketId: dbTickets[2].id,
+      userId: dbUsers[2].id, // ethan
+      createdAt: new Date(baseTime.getTime() + 20 * 60 * 60 * 1000), // 20 hours after ticket creation
+    },
+    {
+      content: "Have you considered using the new API endpoints? They might solve the integration issue.",
+      ticketId: dbTickets[2].id,
+      userId: null, // anonymous comment
+      createdAt: new Date(baseTime.getTime() + 22 * 60 * 60 * 1000), // 22 hours after ticket creation
+    },
+  ];
+
+  await prisma.comment.createMany({
+    data: comments,
   });
 
   const endTime = performance.now();

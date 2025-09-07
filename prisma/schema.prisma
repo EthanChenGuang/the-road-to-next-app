@@ -21,6 +21,7 @@ model User {
   passwordHash String
   sessions     Session[]
   tickets      Ticket[]
+  comments     Comment[]
 }
 
 model Session {
@@ -43,7 +44,22 @@ model Ticket {
   bounty    Int
   userId    String
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments  Comment[]
 
+  @@index([userId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content   String   @db.VarChar(2048)
+  ticketId  String
+  userId    String?
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([ticketId])
   @@index([userId])
 }
 
