@@ -9,29 +9,30 @@ type CommentItemProps = {
 };
 
 const CommentItem = ({ comment, buttons, onViewHistory }: CommentItemProps) => {
-  const displayDate = comment.isEdited && comment.lastEditAt 
-    ? comment.lastEditAt 
-    : comment.createdAt;
-  
-  const dateLabel = comment.isEdited && comment.lastEditAt 
-    ? 'Last edited' 
-    : 'Created';
+  const displayDate =
+    comment.isEdited && comment.lastEditAt
+      ? comment.lastEditAt
+      : comment.createdAt;
+
+  const dateLabel =
+    comment.isEdited && comment.lastEditAt ? 'Last edited' : 'Created';
 
   return (
     <div className="flex gap-x-2">
-      <Card className="p-4 flex-1 flex flex-col gap-y-1">
+      <Card className="p-4 flex-1 flex flex-col gap-y-5">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-x-2">
             <p className="text-sm text-muted-foreground">
               {comment.user?.username ?? 'Deleted User'}
             </p>
             {comment.isEdited && (
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className="text-xs cursor-pointer hover:bg-secondary/80"
                 onClick={onViewHistory}
               >
-                edited {comment.editCount > 1 ? `${comment.editCount}x` : ''}
+                edited{' '}
+                {comment.editCount > 1 ? `${comment.editCount} times` : ''}
               </Badge>
             )}
           </div>

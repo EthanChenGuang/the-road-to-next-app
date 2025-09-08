@@ -52,9 +52,8 @@ const updateComment = async (
 
     // Don't update if content is the same
     if (currentComment.content === content.trim()) {
-      revalidatePath(paths.ticket(ticketId));
       await setCookieByKey('toast', 'No changes made to comment');
-      redirect(paths.ticket(ticketId));
+      return toActionState('SUCCESS', 'No changes made to comment');
     }
 
     // Calculate next version number

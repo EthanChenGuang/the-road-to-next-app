@@ -58,9 +58,9 @@ function DialogContent({
       >
         {children}
         <DialogPrimitive.Close
-          className="absolute top-4 right-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+          className="absolute top-4 right-4 rounded-full p-2 bg-muted/50 hover:bg-muted transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
         >
-          <X className="h-4 w-4" />
+          <X className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>
@@ -104,7 +104,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-lg font-semibold leading-none tracking-tight", className)}
+      className={cn("text-2xl font-bold leading-none tracking-tight", className)}
       {...props}
     />
   )

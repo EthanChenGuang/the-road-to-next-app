@@ -144,19 +144,14 @@ const CommentHistory = ({
               </div>
               
               <div className="space-y-2">
-                <div className="text-sm">
-                  <div className="line-clamp-3 text-muted-foreground">
+                <div className="text-base pl-4">
+                  <div className={`line-clamp-3 font-medium ${
+                    entry.isCurrent ? 'text-foreground' : 'text-muted-foreground'
+                  }`}>
                     {entry.content.slice(0, 150)}
                     {entry.content.length > 150 && '...'}
                   </div>
                 </div>
-                
-                {prevEntry && (
-                  <div className="text-xs">
-                    <span className="text-muted-foreground">Changes from previous: </span>
-                    {getDiffPreview(prevEntry.content, entry.content)}
-                  </div>
-                )}
               </div>
 
               {!entry.isCurrent && (

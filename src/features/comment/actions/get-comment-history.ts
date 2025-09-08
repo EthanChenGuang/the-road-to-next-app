@@ -3,10 +3,10 @@
 import {
   ActionState,
   fromErrorToActionState,
-  toActionState,
 } from '@/components/form/utils/to-action-state';
 import { getAuthOrRedirect } from '@/features/auth/queries/get-auth-or-redirect';
-import { prisma } from '@/lib/prisma';
+
+import { getCommentHistory } from '../queries/get-comment-history';
 
 export type CommentHistoryEntry = {
   id: string;
@@ -27,24 +27,14 @@ const getCommentHistoryAction = async (
   try {
     await getAuthOrRedirect();
 
-    const history = await prisma.commentHistory.findMany({
-      where: { commentId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-          },
-        },
-      },
-      orderBy: { version: 'desc' },
-    });
+    const history = await getCommentHistory(commentId);
 
     return {
-      status: 'SUCCESS',
+      status: 'SUCCESS' as const,
       message: 'Comment history retrieved',
       data: history,
+      fieldErrors: {},
+      timestamp: Date.now(),
     };
   } catch (error) {
     return fromErrorToActionState(error);
