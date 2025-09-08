@@ -15,13 +15,14 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  username     String    @unique
-  email        String    @unique
-  passwordHash String
-  sessions     Session[]
-  tickets      Ticket[]
-  comments     Comment[]
+  id             String           @id @default(cuid())
+  username       String           @unique
+  email          String           @unique
+  passwordHash   String
+  sessions       Session[]
+  tickets        Ticket[]
+  comments       Comment[]
+  commentHistory CommentHistory[]
 }
 
 model Session {
@@ -50,17 +51,37 @@ model Ticket {
 }
 
 model Comment {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  content   String   @db.VarChar(2048)
-  ticketId  String
-  userId    String?
-  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  content    String   @db.VarChar(2048)
+  ticketId   String
+  userId     String?
+  isEdited   Boolean  @default(false)
+  editCount  Int      @default(0)
+  lastEditAt DateTime?
+  ticket     Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  history    CommentHistory[]
 
   @@index([ticketId])
   @@index([userId])
+}
+
+model CommentHistory {
+  id         String    @id @default(uuid())
+  commentId  String
+  content    String    @db.VarChar(2048)
+  version    Int
+  editedAt   DateTime  @default(now())
+  editedBy   String?
+  changeType String    @default("UPDATE")
+  comment    Comment   @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user       User?     @relation(fields: [editedBy], references: [id], onDelete: SetNull)
+
+  @@index([commentId])
+  @@index([editedBy])
+  @@unique([commentId, version])
 }
 
 enum TicketStatus {

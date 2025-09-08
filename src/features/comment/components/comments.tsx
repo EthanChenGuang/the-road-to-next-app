@@ -6,7 +6,7 @@ import { getComments } from '@/features/comment/queries/get-comments';
 import { CommentCreateForm } from './comment-create-form';
 import { CommentDeleteButton } from './comment-delete-button';
 import { CommentEditButton } from './comment-edit-button';
-import { CommentItem } from './comment-item';
+import { CommentItemWithHistory } from './comment-item-with-history';
 
 type CommentsProps = {
   ticketId: string;
@@ -27,9 +27,10 @@ const Comments = async ({ ticketId }: CommentsProps) => {
       />
       <div className="flex flex-col gap-y-4 ml-8">
         {comments.map((comment) => (
-          <CommentItem
+          <CommentItemWithHistory
             key={comment.id}
             comment={comment}
+            ticketId={ticketId}
             buttons={[
               ...(isOwner(user, comment)
                 ? [
