@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { CommentWithMetadata } from '../types';
-import { CommentHistoryModal } from './comment-history-modal';
+import { CommentHistoryDialog } from './comment-history-dialog';
 import { CommentItem } from './comment-item';
 
 type CommentItemWithHistoryProps = {
@@ -12,15 +12,15 @@ type CommentItemWithHistoryProps = {
   buttons?: React.ReactNode[];
 };
 
-const CommentItemWithHistory = ({ 
-  comment, 
-  ticketId, 
-  buttons 
+const CommentItemWithHistory = ({
+  comment,
+  ticketId,
+  buttons,
 }: CommentItemWithHistoryProps) => {
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   const handleViewHistory = () => {
-    setIsHistoryModalOpen(true);
+    setIsHistoryDialogOpen(true);
   };
 
   return (
@@ -30,11 +30,11 @@ const CommentItemWithHistory = ({
         buttons={buttons}
         onViewHistory={comment.isEdited ? handleViewHistory : undefined}
       />
-      
+
       {comment.isEdited && (
-        <CommentHistoryModal
-          isOpen={isHistoryModalOpen}
-          onClose={() => setIsHistoryModalOpen(false)}
+        <CommentHistoryDialog
+          isOpen={isHistoryDialogOpen}
+          onClose={() => setIsHistoryDialogOpen(false)}
           commentId={comment.id}
           ticketId={ticketId}
           currentContent={comment.content}

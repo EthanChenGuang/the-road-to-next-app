@@ -2,20 +2,12 @@
 
 import { useState } from 'react';
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { useConfirmDialog } from '@/components/confirm-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+
+import { revertComment } from '../actions/revert-comment';
 
 type CommentHistoryEntry = {
   id: string;
@@ -32,20 +24,76 @@ type CommentHistoryEntry = {
 
 type CommentHistoryProps = {
   commentId: string;
+  ticketId: string;
   currentContent: string;
   history: CommentHistoryEntry[];
-  onRevert: (version: number) => void;
+};
+
+type RevertButtonProps = {
+  entry: CommentHistoryEntry & { isCurrent?: boolean };
+  commentId: string;
+  ticketId: string;
+};
+
+const RevertButton = ({ entry, commentId, ticketId }: RevertButtonProps) => {
+  const [dialogTrigger, dialog] = useConfirmDialog({
+    title: 'Confirm Revert',
+    description: (data) => {
+      const entryData = data as CommentHistoryEntry & { isCurrent?: boolean };
+      return (
+        <>
+          Are you sure you want to revert to version {entryData.version}? 
+          This will replace the current comment content and cannot be undone.
+          <br />
+          <br />
+          <strong>Previous content:</strong>
+          <div className="mt-2 p-2 bg-muted rounded text-sm whitespace-pre-wrap">
+            {entryData.content.slice(0, 200)}
+            {entryData.content.length > 200 && '...'}
+          </div>
+        </>
+      );
+    },
+    action: revertComment,
+    actionData: entry,
+    formFields: {
+      commentId,
+      ticketId,
+      version: entry.version,
+    },
+    actionButtonProps: {
+      className: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+    },
+    trigger: (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={(e) => e.stopPropagation()}
+      >
+        Revert to this version
+      </Button>
+    ),
+  });
+
+  return (
+    <div className="mt-3 pt-2 border-t">
+      {dialogTrigger}
+      {dialog}
+    </div>
+  );
 };
 
 const CommentHistory = ({ 
+  commentId,
+  ticketId,
   currentContent, 
-  history, 
-  onRevert 
+  history
 }: CommentHistoryProps) => {
   const [selectedVersions, setSelectedVersions] = useState<[number, number] | null>(null);
 
   const allVersions = [
     {
+      id: 'current',
       version: 0,
       content: currentContent,
       editedAt: new Date(),
@@ -67,37 +115,6 @@ const CommentHistory = ({
     }
   };
 
-  const getDiffPreview = (oldContent: string, newContent: string) => {
-    if (oldContent === newContent) {
-      return <span className="text-muted-foreground">No changes</span>;
-    }
-
-    const oldWords = oldContent.split(/(\s+)/);
-    const newWords = newContent.split(/(\s+)/);
-    
-    // Simple diff visualization - show first few changed words
-    const preview = [];
-    
-    for (let i = 0; i < Math.min(oldWords.length, newWords.length, 10); i++) {
-      if (oldWords[i] !== newWords[i]) {
-        preview.push(
-          <span key={i} className="bg-destructive/20 text-destructive px-1 rounded">
-            {oldWords[i]}
-          </span>,
-          <span key={`${i}-new`} className="bg-green-500/20 text-green-700 px-1 rounded ml-1">
-            {newWords[i]}
-          </span>
-        );
-        break;
-      }
-    }
-    
-    if (preview.length === 0) {
-      return <span className="text-muted-foreground">Content modified</span>;
-    }
-    
-    return <div className="flex flex-wrap gap-1">{preview}</div>;
-  };
 
   return (
     <div className="space-y-4">
@@ -109,10 +126,9 @@ const CommentHistory = ({
       </div>
 
       <div className="space-y-3">
-        {allVersions.map((entry, index) => {
+        {allVersions.map((entry) => {
           const isSelected = selectedVersions && 
             (entry.version >= selectedVersions[0] && entry.version <= selectedVersions[1]);
-          const prevEntry = allVersions[index + 1];
           
           return (
             <Card 
@@ -154,46 +170,7 @@ const CommentHistory = ({
                 </div>
               </div>
 
-              {!entry.isCurrent && (
-                <div className="mt-3 pt-2 border-t">
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Revert to this version
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Revert</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to revert to version {entry.version}? 
-                          This will replace the current comment content and cannot be undone.
-                          <br />
-                          <br />
-                          <strong>Previous content:</strong>
-                          <div className="mt-2 p-2 bg-muted rounded text-sm whitespace-pre-wrap">
-                            {entry.content.slice(0, 200)}
-                            {entry.content.length > 200 && '...'}
-                          </div>
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => onRevert(entry.version)}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Revert Comment
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              )}
+              {!entry.isCurrent && <RevertButton entry={entry} commentId={commentId} ticketId={ticketId} />}
             </Card>
           );
         })}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import {
@@ -12,12 +12,11 @@ import {
 
 import {
   CommentHistoryEntry,
-  getCommentHistoryAction,
+  getCommentHistory,
 } from '../actions/get-comment-history';
-import { revertComment } from '../actions/revert-comment';
 import { CommentHistory } from './comment-history';
 
-type CommentHistoryModalProps = {
+type CommentHistoryDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   commentId: string;
@@ -25,21 +24,20 @@ type CommentHistoryModalProps = {
   currentContent: string;
 };
 
-const CommentHistoryModal = ({
+const CommentHistoryDialog = ({
   isOpen,
   onClose,
   commentId,
   ticketId,
   currentContent,
-}: CommentHistoryModalProps) => {
+}: CommentHistoryDialogProps) => {
   const [history, setHistory] = useState<CommentHistoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (isOpen && commentId) {
       setLoading(true);
-      getCommentHistoryAction(commentId)
+      getCommentHistory(commentId)
         .then((result) => {
           if (result.status === 'SUCCESS' && result.data) {
             setHistory(result.data);
@@ -54,26 +52,6 @@ const CommentHistoryModal = ({
         .finally(() => setLoading(false));
     }
   }, [isOpen, commentId]);
-
-  const handleRevert = (version: number) => {
-    startTransition(async () => {
-      try {
-        const result = await revertComment(commentId, ticketId, version);
-
-        if (result.status === 'SUCCESS') {
-          toast.success(result.message || `Reverted to version ${version}`);
-          onClose();
-          // Refresh the page to show the reverted comment
-          window.location.reload();
-        } else {
-          toast.error(result.message || 'Failed to revert comment');
-        }
-      } catch (error) {
-        console.error('Failed to revert comment:', error);
-        toast.error('Failed to revert comment');
-      }
-    });
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -90,23 +68,15 @@ const CommentHistoryModal = ({
           ) : (
             <CommentHistory
               commentId={commentId}
+              ticketId={ticketId}
               currentContent={currentContent}
               history={history}
-              onRevert={handleRevert}
             />
           )}
         </div>
-
-        {isPending && (
-          <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[60]">
-            <div className="bg-background p-4 rounded-lg shadow-lg">
-              <div className="text-sm">Reverting comment...</div>
-            </div>
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );
 };
 
-export { CommentHistoryModal };
+export { CommentHistoryDialog };

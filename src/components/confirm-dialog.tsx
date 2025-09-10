@@ -1,6 +1,6 @@
 'use client';
 
-import { cloneElement, ReactElement, useActionState, useEffect,useState } from 'react';
+import { cloneElement, ReactElement, ReactNode, useActionState, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { SubmitButton } from './form/submit-button';
@@ -15,12 +15,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from './ui/alert-dialog';
+import { Button } from './ui/button';
 
 type UseConfirmDialogProps = {
   title?: string;
-  description?: string;
+  description?: string | ReactNode | ((data?: unknown) => ReactNode);
   action: (formData: FormData) => Promise<ActionState>;
   trigger: ReactElement;
+  actionButtonProps?: Partial<React.ComponentProps<typeof Button>>;
+  actionData?: unknown;
+  formFields?: Record<string, string | number>;
 };
 
 const useConfirmDialog = ({
@@ -28,6 +32,9 @@ const useConfirmDialog = ({
   description = 'This action cannot be undone. Make sure you want to proceed.',
   action,
   trigger,
+  actionButtonProps = {},
+  actionData,
+  formFields = {},
 }: UseConfirmDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -69,18 +76,34 @@ const useConfirmDialog = ({
     }
   }, [actionState.status]);
 
+  // Render description based on its type
+  const renderDescription = () => {
+    if (typeof description === 'function') {
+      return description(actionData);
+    }
+    return description;
+  };
+
   const dialog = (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+          <AlertDialogDescription>{renderDescription()}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction asChild>
             <form action={formAction} className="flex flex-col gap-y-2">
-              <SubmitButton label="Confirm" />
+              {Object.entries(formFields).map(([key, value]) => (
+                <input key={key} type="hidden" name={key} value={value} />
+              ))}
+              <SubmitButton 
+                label="Confirm" 
+                variant={actionButtonProps?.variant || undefined}
+                size={actionButtonProps?.size || undefined}
+                className={actionButtonProps?.className}
+              />
             </form>
           </AlertDialogAction>
         </AlertDialogFooter>

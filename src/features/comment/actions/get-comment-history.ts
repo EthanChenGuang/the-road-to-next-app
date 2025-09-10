@@ -6,7 +6,7 @@ import {
 } from '@/components/form/utils/to-action-state';
 import { getAuthOrRedirect } from '@/features/auth/queries/get-auth-or-redirect';
 
-import { getCommentHistory } from '../queries/get-comment-history';
+import { getCommentHistory as getCommentHistoryQuery } from '../queries/get-comment-history';
 
 export type CommentHistoryEntry = {
   id: string;
@@ -21,13 +21,13 @@ export type CommentHistoryEntry = {
   } | null;
 };
 
-const getCommentHistoryAction = async (
+const getCommentHistory = async (
   commentId: string
-): Promise<ActionState & { data?: CommentHistoryEntry[] }> => {
+): Promise<ActionState & { data?: CommentHistoryEntry[] | undefined }> => {
   try {
     await getAuthOrRedirect();
 
-    const history = await getCommentHistory(commentId);
+    const history = await getCommentHistoryQuery(commentId);
 
     return {
       status: 'SUCCESS' as const,
@@ -41,4 +41,4 @@ const getCommentHistoryAction = async (
   }
 };
 
-export { getCommentHistoryAction };
+export { getCommentHistory };

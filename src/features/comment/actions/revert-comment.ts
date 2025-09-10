@@ -13,10 +13,11 @@ import { prisma } from '@/lib/prisma';
 import { paths } from '@/paths';
 
 export const revertComment = async (
-  commentId: string,
-  ticketId: string,
-  historyVersion: number
+  formData: FormData
 ): Promise<ActionState> => {
+  const commentId = formData.get('commentId') as string;
+  const ticketId = formData.get('ticketId') as string;
+  const historyVersion = parseInt(formData.get('version') as string);
   if (!commentId) {
     return toActionState('ERROR', 'Comment ID is required');
   }
@@ -105,3 +106,4 @@ export const revertComment = async (
   
   return toActionState('SUCCESS', 'Comment reverted successfully');
 };
+

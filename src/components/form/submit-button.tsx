@@ -18,13 +18,14 @@ type SubmitButtonProps = {
     | 'ghost'
     | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';
+  className?: string;
 };
 
-const SubmitButton = ({ label, icon }: SubmitButtonProps) => {
+const SubmitButton = ({ label, icon, variant, size, className }: SubmitButtonProps) => {
   const { pending: isPending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={isPending}>
+    <Button type="submit" disabled={isPending} variant={variant} size={size} className={className}>
       {isPending && (
         <LucideLoaderCircle
           className={clsx('h-4 w-4 animate-spin', { 'mr-2': !!label })}
