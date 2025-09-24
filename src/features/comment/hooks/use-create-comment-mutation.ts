@@ -1,10 +1,18 @@
 'use client';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { createComment } from '../actions/create-comment';
 import { CommentWithMetadata } from '../types';
+
+type CommentPage = {
+  list: CommentWithMetadata[];
+  metadata: {
+    hasNextPage: boolean;
+    cursor: string | undefined;
+  };
+};
 
 export const useCreateCommentMutation = (ticketId: string) => {
   const queryClient = useQueryClient();
@@ -14,7 +22,7 @@ export const useCreateCommentMutation = (ticketId: string) => {
     mutationFn: async (formData: FormData) => {
       const result = await createComment(
         { ticketId },
-        { status: 'IDLE' },
+        { status: 'SUCCESS', message: '', fieldErrors: {}, payload: undefined, timestamp: Date.now() },
         formData
       );
 
@@ -41,10 +49,13 @@ export const useCreateCommentMutation = (ticketId: string) => {
         userId: 'temp-user',
         ticketId,
         isOwner: true,
+        isEdited: false,
+        editCount: 0,
+        lastEditAt: null,
         user: { username: 'You' },
       };
 
-      queryClient.setQueryData(queryKey, (old: any) => {
+      queryClient.setQueryData(queryKey, (old: InfiniteData<CommentPage> | undefined) => {
         if (!old) return old;
         const newPages = [...old.pages];
         if (newPages[0]) {
@@ -70,7 +81,7 @@ export const useCreateCommentMutation = (ticketId: string) => {
     },
     onSuccess: (data, _formData, context) => {
       // Replace optimistic update with real data
-      queryClient.setQueryData(queryKey, (old: any) => {
+      queryClient.setQueryData(queryKey, (old: InfiniteData<CommentPage> | undefined) => {
         if (!old) return old;
         const newPages = [...old.pages];
         if (newPages[0] && context?.optimisticComment) {

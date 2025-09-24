@@ -3,6 +3,7 @@
 import {
   ActionState,
   fromErrorToActionState,
+  toActionState,
 } from '@/components/form/utils/to-action-state';
 import { getAuthOrRedirect } from '@/features/auth/queries/get-auth-or-redirect';
 
@@ -29,13 +30,7 @@ const getCommentHistory = async (
 
     const history = await getCommentHistoryQuery(commentId);
 
-    return {
-      status: 'SUCCESS' as const,
-      message: 'Comment history retrieved',
-      data: history,
-      fieldErrors: {},
-      timestamp: Date.now(),
-    };
+    return toActionState('SUCCESS', 'Comment history retrieved', undefined, history);
   } catch (error) {
     return fromErrorToActionState(error);
   }

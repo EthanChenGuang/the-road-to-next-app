@@ -1,8 +1,16 @@
 'use client';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { CommentWithMetadata } from '../types';
+
+type CommentPage = {
+  list: CommentWithMetadata[];
+  metadata: {
+    hasNextPage: boolean;
+    cursor: string | undefined;
+  };
+};
 
 export const useDeleteCommentMutation = (ticketId: string) => {
   const queryClient = useQueryClient();
@@ -22,11 +30,11 @@ export const useDeleteCommentMutation = (ticketId: string) => {
       const previousComments = queryClient.getQueryData(queryKey);
 
       // Optimistically remove comment
-      queryClient.setQueryData(queryKey, (old: any) => {
+      queryClient.setQueryData(queryKey, (old: InfiniteData<CommentPage> | undefined) => {
         if (!old) return old;
         return {
           ...old,
-          pages: old.pages.map((page: any) => ({
+          pages: old.pages.map((page) => ({
             ...page,
             list: page.list.filter((comment: CommentWithMetadata) => comment.id !== commentId),
           })),

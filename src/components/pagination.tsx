@@ -31,8 +31,12 @@ const Pagination = ({
 }: PaginationProps) => {
   const startOffset = pagination.page * pagination.size + 1;
   const endOffset = startOffset + pagination.size - 1;
-  const actualEndOffset = Math.min(endOffset, paginatedMetadata.total);
-  const label = `${startOffset} - ${actualEndOffset} of ${paginatedMetadata.total}`;
+  // For cursor-based pagination, we don't have total count
+  const hasTotal = 'total' in paginatedMetadata;
+  const actualEndOffset = hasTotal ? Math.min(endOffset, paginatedMetadata.total as number) : endOffset;
+  const label = hasTotal
+    ? `${startOffset} - ${actualEndOffset} of ${paginatedMetadata.total}`
+    : `Page ${pagination.page + 1}`;
 
   const handlePreviousPage = () => {
     onPagination({ ...pagination, page: pagination.page - 1 });

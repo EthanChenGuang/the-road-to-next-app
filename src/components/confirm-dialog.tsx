@@ -84,7 +84,7 @@ const useConfirmDialog = ({
       setTimeout(() => setIsOpen(false), 200);
       onSuccess?.(actionState);
     }
-  }, [actionState.status]);
+  }, [actionState.status, actionState, onSuccess]);
 
   // Render description based on its type
   const renderDescription = () => {

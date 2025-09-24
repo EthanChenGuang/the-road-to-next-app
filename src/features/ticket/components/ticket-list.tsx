@@ -53,7 +53,7 @@ export const TicketList = async ({ userId, searchParams }: TicketListProps) => {
               key={ticket.id}
               ticket={ticket}
               isDetail={false}
-              comments={[]}
+              paginatedComments={{ list: [], metadata: { hasNextPage: false, cursor: undefined } }}
             />
           ))
         ) : (

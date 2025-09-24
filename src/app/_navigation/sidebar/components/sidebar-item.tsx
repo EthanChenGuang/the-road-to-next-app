@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { cloneElement } from 'react';
+import { cloneElement, ReactElement } from 'react';
 
 import { buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -27,9 +27,9 @@ const SidebarItem = ({ isOpen, navItem, isActive }: SidebarItemProps) => {
           isActive && 'bg-muted font-bold hover:bg-muted'
         )}
       >
-        {cloneElement(navItem.icon, {
+        {cloneElement(navItem.icon as ReactElement<{ className?: string }>, {
           className: 'h-5 w-5',
-        } as any)}
+        })}
         <span
           className={cn(
             'absolute left-12 text-base duration-200',
