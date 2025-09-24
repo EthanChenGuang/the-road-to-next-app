@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-
 import { LucideTrash } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import {
@@ -36,7 +35,7 @@ const CommentDeleteButton = ({
       await onDeleteComment?.(commentId);
       toast.success('Comment deleted successfully');
       setIsOpen(false);
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete comment');
     } finally {
       setIsDeleting(false);
