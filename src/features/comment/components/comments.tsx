@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 import { CardCompact } from '@/components/card-compact';
