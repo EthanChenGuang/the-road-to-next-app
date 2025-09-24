@@ -57,7 +57,7 @@ const Comments = ({ ticketId, paginatedComments }: CommentsProps) => {
   const deleteCommentMutation = useDeleteCommentMutation(ticketId);
 
   const handleDeleteComment = async (commentId: string) => {
-    await deleteCommentMutation.mutateAsync(commentId);
+    return deleteCommentMutation.mutateAsync(commentId);
   };
 
   const handleCreateComment = async () => {

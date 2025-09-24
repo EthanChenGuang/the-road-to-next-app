@@ -1,7 +1,5 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-
 import {
   fromErrorToActionState,
   toActionState,
@@ -9,7 +7,6 @@ import {
 import { getAuthOrRedirect } from '@/features/auth/queries/get-auth-or-redirect';
 import { isOwner } from '@/features/auth/utils/is-owner';
 import { prisma } from '@/lib/prisma';
-import { paths } from '@/paths';
 
 const deleteComment = async ({ commentId }: { commentId: string }) => {
   const { user } = await getAuthOrRedirect();
@@ -29,8 +26,6 @@ const deleteComment = async ({ commentId }: { commentId: string }) => {
   } catch (error) {
     return fromErrorToActionState(error);
   }
-
-  revalidatePath(paths.ticket(comment.ticketId));
 
   return toActionState('SUCCESS', 'Comment deleted');
 };

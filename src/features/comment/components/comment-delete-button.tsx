@@ -1,11 +1,22 @@
 'use client';
 
+import { useState } from 'react';
+
 import { LucideTrash } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { useConfirmDialog } from '@/components/confirm-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-
-import { deleteComment } from '../actions/delete-comment';
 
 type CommentDeleteButtonProps = {
   commentId: string;
@@ -16,21 +27,48 @@ const CommentDeleteButton = ({
   commentId,
   onDeleteComment,
 }: CommentDeleteButtonProps) => {
-  const [deleteButton, deleteDialog] = useConfirmDialog({
-    action: deleteComment.bind(null, { commentId }),
-    trigger: (
-      <Button variant="outline" size="icon">
-        <LucideTrash className="w-4 h-4" />
-      </Button>
-    ),
-    onSuccess: () => onDeleteComment?.(commentId),
-  });
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await onDeleteComment?.(commentId);
+      toast.success('Comment deleted successfully');
+      setIsOpen(false);
+    } catch (error) {
+      toast.error('Failed to delete comment');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
-    <>
-      {deleteDialog}
-      {deleteButton}
-    </>
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline" size="icon">
+          <LucideTrash className="w-4 h-4" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete the comment.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

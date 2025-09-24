@@ -2,6 +2,7 @@
 
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { deleteComment } from '../actions/delete-comment';
 import { CommentWithMetadata } from '../types';
 
 type CommentPage = {
@@ -18,12 +19,14 @@ export const useDeleteCommentMutation = (ticketId: string) => {
 
   return useMutation({
     mutationFn: async (commentId: string) => {
-      // Here you would call your delete comment server action
-      // For now, we'll simulate the deletion
+      const result = await deleteComment({ commentId });
+      if (result.status === 'ERROR') {
+        throw new Error(result.message);
+      }
       return commentId;
     },
     onMutate: async (commentId: string) => {
-      // Cancel outgoing refetches
+      // Cancel outgoing re-fetches
       await queryClient.cancelQueries({ queryKey });
 
       // Snapshot previous value
@@ -43,15 +46,15 @@ export const useDeleteCommentMutation = (ticketId: string) => {
 
       return { previousComments };
     },
-    onError: (err, commentId, context) => {
+    onError: (_err, _commentId, context) => {
       // Rollback on error
       if (context?.previousComments) {
         queryClient.setQueryData(queryKey, context.previousComments);
       }
-      // Note: Toast is handled by useConfirmDialog, not here
+      // Note: Toast is handled by delete button component
     },
     onSuccess: () => {
-      // Note: Toast is handled by useConfirmDialog, not here
+      // Note: Toast is handled by delete button component
     },
   });
 };
