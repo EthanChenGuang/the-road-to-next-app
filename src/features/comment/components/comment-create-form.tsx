@@ -1,31 +1,72 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useState } from 'react';
 
-import { FieldError } from '@/components/form/field-error';
-import { Form } from '@/components/form/form';
-import { SubmitButton } from '@/components/form/submit-button';
-import { EMPTY_ACTION_STATE } from '@/components/form/utils/to-action-state';
+import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
-import { createComment } from '../actions/create-comment';
+import { useCreateCommentMutation } from '../hooks/use-create-comment-mutation';
+import { CommentWithMetadata } from '../types';
 
 type CommentCreateFormProps = {
   ticketId: string;
+  onCreateComment?: (comment: CommentWithMetadata) => void;
 };
 
-const CommentCreateForm = ({ ticketId }: CommentCreateFormProps) => {
-  const [actionState, formAction] = useActionState(
-    createComment.bind(null, { ticketId }),
-    EMPTY_ACTION_STATE
-  );
+const CommentCreateForm = ({
+  ticketId,
+  onCreateComment,
+}: CommentCreateFormProps) => {
+  const [content, setContent] = useState('');
+  const [error, setError] = useState('');
+
+  const mutation = useCreateCommentMutation(ticketId);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!content.trim()) {
+      setError('Please enter a comment');
+      return;
+    }
+
+    if (content.length > 1024) {
+      setError('Comment must be less than 1024 characters');
+      return;
+    }
+
+    setError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('content', content);
+
+      const newComment = await mutation.mutateAsync(formData);
+      onCreateComment?.(newComment);
+      setContent('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create comment');
+    }
+  };
 
   return (
-    <Form action={formAction} actionState={actionState}>
-      <Textarea name="content" placeholder="Add a comment" />
-      <FieldError actionState={actionState} field="content" />
-      <SubmitButton label="Comment" />
-    </Form>
+    <form onSubmit={handleSubmit} className="space-y-2">
+      <Textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        placeholder="Add a comment"
+        disabled={mutation.isPending}
+      />
+      {error && (
+        <p className="text-sm text-red-600">{error}</p>
+      )}
+      <Button
+        type="submit"
+        disabled={mutation.isPending || !content.trim()}
+      >
+        {mutation.isPending ? 'Creating...' : 'Comment'}
+      </Button>
+    </form>
   );
 };
 

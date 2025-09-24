@@ -1,6 +1,5 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import z from 'zod';
 
 import {
@@ -10,7 +9,6 @@ import {
 } from '@/components/form/utils/to-action-state';
 import { getAuthOrRedirect } from '@/features/auth/queries/get-auth-or-redirect';
 import { prisma } from '@/lib/prisma';
-import { paths } from '@/paths';
 
 const createCommentSchema = z.object({
   content: z
@@ -30,17 +28,22 @@ const createComment = async (
     return toActionState('ERROR', 'Unauthorized');
   }
 
+  let comment;
+
   try {
     const formDataObject = Object.fromEntries(formData);
     const data = createCommentSchema.parse({
       content: formDataObject.content || '',
     });
 
-    await prisma.comment.create({
+    comment = await prisma.comment.create({
       data: {
         userId: user.id,
         ticketId,
         ...data,
+      },
+      include: {
+        user: true,
       },
     });
   } catch (error) {
@@ -83,9 +86,10 @@ const createComment = async (
     return fromErrorToActionState(error);
   }
 
-  revalidatePath(paths.ticket(ticketId));
-
-  return toActionState('SUCCESS', 'Comment created');
+  return toActionState('SUCCESS', 'Comment created', undefined, {
+    ...comment,
+    isOwner: true,
+  });
 };
 
 export { createComment };
