@@ -30,9 +30,9 @@ const getCommentHistory = async (
 
     const history = await getCommentHistoryQuery(commentId);
 
-    return toActionState('SUCCESS', 'Comment history retrieved', undefined, history);
+    return toActionState('SUCCESS', 'Comment history retrieved', undefined, history) as ActionState & { data?: CommentHistoryEntry[] | undefined };
   } catch (error) {
-    return fromErrorToActionState(error);
+    return fromErrorToActionState(error) as ActionState & { data?: CommentHistoryEntry[] | undefined };
   }
 };
 
