@@ -1,6 +1,5 @@
-// 'use client';
+'use client';
 
-import { Prisma } from '@prisma/client';
 import clsx from 'clsx';
 import {
   LucideMoreVertical,
@@ -8,6 +7,7 @@ import {
   LucideSquareArrowOutUpRight,
 } from 'lucide-react';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,32 +17,30 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { getAuth } from '@/features/auth/queries/get-auth';
-import { isOwner } from '@/features/auth/utils/is-owner';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Comments } from '@/features/comment/components/comments';
+import { CommentWithMetadata } from '@/features/comment/types';
 import { paths } from '@/paths';
+import { PaginatedData } from '@/types/pagination';
 import { toCurrencyFromCents } from '@/utils/currency';
 
 import { TICKET_ICONS } from '../constants';
+import { TicketWithMetadata } from '../types';
 import { TicketMoreMenu } from './ticket-more-menu';
 
 type TicketItemProps = {
-  ticket: Prisma.TicketGetPayload<{
-    include: {
-      user: {
-        select: {
-          username: true;
-        };
-      };
-    };
-  }>;
+  ticket: TicketWithMetadata;
   isDetail?: boolean;
+  paginatedComments: PaginatedData<CommentWithMetadata>;
 };
 
-const TicketItem = async ({ ticket, isDetail = true }: TicketItemProps) => {
-  const { user } = await getAuth();
-
-  const isTicketOwner = isOwner(user, ticket);
+const TicketItem = ({
+  ticket,
+  isDetail = true,
+  paginatedComments,
+}: TicketItemProps) => {
+  // const { user } = await getAuth();
+  // const isTicketOwner = isOwner(user, ticket);
 
   const detailButton = (
     <Button variant="outline" size="icon" asChild>
@@ -52,7 +50,7 @@ const TicketItem = async ({ ticket, isDetail = true }: TicketItemProps) => {
     </Button>
   );
 
-  const editButton = isTicketOwner ? (
+  const editButton = ticket.isOwner ? (
     <Button variant="outline" size="icon" asChild>
       <Link prefetch href={paths.editTicket(ticket.id)}>
         <LucidePencil className="w-4 h-4" />
@@ -60,7 +58,7 @@ const TicketItem = async ({ ticket, isDetail = true }: TicketItemProps) => {
     </Button>
   ) : null;
 
-  const moreMenu = isTicketOwner ? (
+  const moreMenu = ticket.isOwner ? (
     <TicketMoreMenu
       ticket={ticket}
       trigger={
@@ -122,7 +120,22 @@ const TicketItem = async ({ ticket, isDetail = true }: TicketItemProps) => {
           )}
         </div>
       </div>
-      {isDetail && <Comments ticketId={ticket.id} />}
+      {isDetail && (
+        <Suspense
+          fallback={
+            <div className="flex flex-col gap-y-4">
+              <Skeleton className="h-[250px] w-full" />
+              <Skeleton className="h-[80px] ml-8" />
+              <Skeleton className="h-[80px] ml-8" />
+            </div>
+          }
+        >
+          <Comments
+            ticketId={ticket.id}
+            paginatedComments={paginatedComments}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

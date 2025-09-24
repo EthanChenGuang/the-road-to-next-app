@@ -4,18 +4,21 @@ import { useQueryState, useQueryStates } from 'nuqs';
 import { useEffect, useRef } from 'react';
 
 import { Pagination } from '@/components/pagination';
+import { PaginatedData } from '@/types/pagination';
 
 import {
   paginationOptions,
   paginationParser,
   searchParser,
 } from '../search-params';
+import { TicketWithMetadata } from '../types';
 
 type TicketPaginationProps = {
-  paginatedTicketMetadata: {
-    total: number;
-    hasNextPage: boolean;
-  };
+  // paginatedTicketMetadata: {
+  //   total: number;
+  //   hasNextPage: boolean;
+  // };
+  paginatedTicketMetadata: PaginatedData<TicketWithMetadata>['metadata'];
 };
 
 const TicketPagination = ({
