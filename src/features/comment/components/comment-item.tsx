@@ -1,3 +1,5 @@
+import { format } from 'date-fns';
+
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { CommentWithMetadata } from '@/features/comment/types';
@@ -27,22 +29,22 @@ const CommentItem = ({ comment, buttons, onViewHistory }: CommentItemProps) => {
             </p>
             {comment.isEdited && (
               <Badge
-                variant="secondary"
-                className="text-xs cursor-pointer hover:bg-secondary/80"
+                variant="outline"
+                className="text-xs cursor-pointer hover:bg-muted"
                 onClick={onViewHistory}
               >
-                edited{' '}
-                {comment.editCount > 1 ? `${comment.editCount} times` : ''}
+                Edited
               </Badge>
             )}
           </div>
           <div className="text-right">
             <p className="text-sm text-muted-foreground">
-              {dateLabel}: {displayDate.toLocaleString()}
+              {dateLabel}: {format(displayDate, 'yyyy-MM-dd HH:mm')}
             </p>
             {comment.isEdited && comment.lastEditAt && (
               <p className="text-xs text-muted-foreground">
-                Originally: {comment.createdAt.toLocaleString()}
+                {/* Originally: {comment.createdAt.toLocaleString()} */}
+                Originally: {format(comment.createdAt, 'yyyy-MM-dd HH:mm')}
               </p>
             )}
           </div>

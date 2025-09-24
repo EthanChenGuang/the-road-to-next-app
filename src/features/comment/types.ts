@@ -8,7 +8,7 @@ export type CommentWithMetadata = Prisma.CommentGetPayload<{
       };
     };
   };
-}>;
+}> & { isOwner: boolean };
 
 export type CommentWithHistory = Prisma.CommentGetPayload<{
   include: {
@@ -31,4 +31,4 @@ export type CommentWithHistory = Prisma.CommentGetPayload<{
       };
     };
   };
-}>;
+}> & { isOwner: boolean };
