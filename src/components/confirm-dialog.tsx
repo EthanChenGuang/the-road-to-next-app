@@ -1,6 +1,13 @@
 'use client';
 
-import { cloneElement, ReactElement, ReactNode, useActionState, useEffect, useState } from 'react';
+import {
+  cloneElement,
+  ReactElement,
+  ReactNode,
+  useActionState,
+  useEffect,
+  useState,
+} from 'react';
 import { toast } from 'sonner';
 
 import { SubmitButton } from './form/submit-button';
@@ -25,6 +32,7 @@ type UseConfirmDialogProps = {
   actionButtonProps?: Partial<React.ComponentProps<typeof Button>>;
   actionData?: unknown;
   formFields?: Record<string, string | number>;
+  onSuccess?: (actionData: ActionState) => void;
 };
 
 const useConfirmDialog = ({
@@ -35,6 +43,7 @@ const useConfirmDialog = ({
   actionButtonProps = {},
   actionData,
   formFields = {},
+  onSuccess,
 }: UseConfirmDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -55,14 +64,14 @@ const useConfirmDialog = ({
   const [actionState, formAction] = useActionState(
     async (_state: ActionState, formData: FormData) => {
       const result = await action(formData);
-      
+
       // Show toast immediately since form might get unmounted
       if (result.status === 'SUCCESS' && result.message) {
         toast.success(result.message);
       } else if (result.status === 'ERROR' && result.message) {
         toast.error(result.message);
       }
-      
+
       return result;
     },
     EMPTY_ACTION_STATE
@@ -73,6 +82,7 @@ const useConfirmDialog = ({
     if (actionState.status === 'SUCCESS') {
       // Small delay to ensure toast appears before dialog closes
       setTimeout(() => setIsOpen(false), 200);
+      onSuccess?.(actionState);
     }
   }, [actionState.status]);
 
@@ -98,8 +108,8 @@ const useConfirmDialog = ({
               {Object.entries(formFields).map(([key, value]) => (
                 <input key={key} type="hidden" name={key} value={value} />
               ))}
-              <SubmitButton 
-                label="Confirm" 
+              <SubmitButton
+                label="Confirm"
                 variant={actionButtonProps?.variant || undefined}
                 size={actionButtonProps?.size || undefined}
                 className={actionButtonProps?.className}

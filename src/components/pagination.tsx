@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { PaginatedData } from '@/types/pagination';
 
 import {
   Select,
@@ -16,10 +17,11 @@ type PageAndSize = {
 type PaginationProps = {
   pagination: PageAndSize;
   onPagination: (pagination: PageAndSize) => void;
-  paginatedMetadata: {
-    total: number;
-    hasNextPage: boolean;
-  };
+  // paginatedMetadata: {
+  //   total: number;
+  //   hasNextPage: boolean;
+  // };
+  paginatedMetadata: PaginatedData<unknown>['metadata'];
 };
 
 const Pagination = ({
