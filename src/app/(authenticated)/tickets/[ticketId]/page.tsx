@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Separator } from '@/components/ui/separator';
+import { getComments } from '@/features/comment/queries/get-comments';
 import { TicketItem } from '@/features/ticket/components/ticket-item';
 import { getTicket } from '@/features/ticket/queries/get-ticket';
 import { paths } from '@/paths';
@@ -14,7 +15,10 @@ type TicketPageProps = {
 
 const TicketPage = async ({ params }: TicketPageProps) => {
   const { ticketId } = await params;
-  const ticket = await getTicket(ticketId);
+  const [ticket, paginatedComments] = await Promise.all([
+    getTicket(ticketId),
+    getComments(ticketId),
+  ]);
 
   if (!ticket) {
     notFound();
@@ -31,7 +35,11 @@ const TicketPage = async ({ params }: TicketPageProps) => {
       <Breadcrumbs breadcrumbs={breadcrumbs} />
       <Separator />
       <div className="flex flex-col items-center animate-fade-in-from-top gap-8">
-        <TicketItem ticket={ticket} isDetail={true} />
+        <TicketItem
+          ticket={ticket}
+          isDetail={true}
+          paginatedComments={paginatedComments}
+        />
       </div>
     </div>
   );
